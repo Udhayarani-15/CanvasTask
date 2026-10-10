@@ -1,0 +1,80 @@
+
+.task-card {
+  background-color: white;
+  color: #222;
+  border: 1px solid #d8d8d8;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 18px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  transition: background-color 0.25s ease;
+}
+
+.task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.task-header h3 {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.task-description {
+  color: inherit;
+  line-height: 1.6;
+}
+
+.priority-section {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.priority-section label {
+  font-weight: 600;
+}
+
+.priority-section select {
+  padding: 9px 12px;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+  background-color: white;
+  color: #222;
+  cursor: pointer;
+}
+
+.current-priority {
+  margin-bottom: 0;
+  margin-top: 15px;
+}
+
+.delete-button {
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.delete-button:hover {
+  background-color: #555;
+}
+
+/* URGENT priority changes the card background to red */
+.task-card.urgent {
+  background-color: red;
+  color: white;
+  border-color: darkred;
+}
+
+/* Keep the dropdown readable on the red card */
+.task-card.urgent select {
+  background-color: white;
+  color: black;
+}

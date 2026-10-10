@@ -1,0 +1,32 @@
+
+.task-card {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px;
+  max-width: 400px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+}
+
+.task-card h2 {
+  margin-top: 0;
+}
+
+.task-card select {
+  padding: 8px 12px;
+  margin-left: 10px;
+  border-radius: 5px;
+  border: 1px solid #888;
+}
+
+.task-card.urgent {
+  background-color: red;
+  color: white;
+}
+
+.task-card.urgent select {
+  color: black;
+  background-color: white;
+}
