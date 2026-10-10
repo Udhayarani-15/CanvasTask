@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TaskFlow | Sprint 1 Task Manager</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #20243a;
+        --muted: #72788d;
+        --line: #e8eaf2;
+        --brand: #6558d3;
+        --bg: #f6f7fc;
+      }
+      body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: Inter, system-ui, sans-serif;
+      }
+      .navbar {
+        background: #fff;
+        border-bottom: 1px solid var(--line);
+      }
+      .brand-icon {
+        display: inline-grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #6659d6, #9a8df3);
+        color: white;
+        font-weight: 800;
+        margin-right: 10px;
+      }
+      .hero {
+        padding: 34px 0 24px;
+      }
+      .eyebrow {
+        color: var(--brand);
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      .hero h1 {
+        font-weight: 800;
+        letter-spacing: -0.04em;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .surface {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        box-shadow: 0 8px 28px #24264b08;
+      }
+      .section-title {
+        font-weight: 750;
+        font-size: 1.08rem;
+      }
+      .form-label {
+        font-weight: 650;
+        font-size: 0.9rem;
+      }
+      .form-control,
+      .form-select {
+        border-color: #dfe2ed;
+        border-radius: 10px;
+        padding: 0.7rem 0.8rem;
+      }
+      .form-control:focus,
+      .form-select:focus {
+        border-color: #8278e8;
+        box-shadow: 0 0 0 0.2rem #6558d31a;
+      }
+      .btn-brand {
+        background: var(--brand);
+        color: white;
+        border-color: var(--brand);
+      }
+      .btn-brand:hover {
+        background: #5145bd;
+        color: #fff;
+      }
+      .status-badge {
+        font-size: 0.72rem;
+        font-weight: 750;
+        padding: 0.42rem 0.65rem;
+        border-radius: 30px;
+        white-space: nowrap;
+      }
+      .status-todo {
+        background: #e9edff;
+        color: #4556b7;
+      }
+      .status-progress {
+        background: #fff0d8;
+        color: #9b6400;
+      }
+      .status-review {
+        background: #f1e6ff;
+        color: #7846ac;
+      }
+      .status-done {
+        background: #dff7e9;
+        color: #23764b;
+      }
+      .task-card {
+        height: 100%;
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        background: white;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
+      }
+      .task-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px #24264b0c;
+      }
+      .task-card .card-body {
+        padding: 1.1rem;
+      }
+      .task-name {
+        font-size: 1.02rem;
+        font-weight: 750;
+        overflow-wrap: anywhere;
+      }
+      .task-description {
+        font-size: 0.9rem;
+        color: #626980;
+        line-height: 1.5;
+        min-height: 2.7rem;
+        overflow-wrap: anywhere;
+      }
+      .meta-label {
+        font-size: 0.72rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 750;
+      }
+      .meta-value {
+        font-size: 0.86rem;
+        font-weight: 600;
+        overflow-wrap: anywhere;
+      }
+      .stat {
+        padding: 14px 17px;
+      }
+      .stat-number {
+        font-size: 1.35rem;
+        font-weight: 800;
+      }
+      .stat-label {
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+      .empty-state {
+        border: 1px dashed #cfd3e3;
+        border-radius: 14px;
+        padding: 28px;
+        text-align: center;
+        color: var(--muted);
+        background: #fff;
+      }
+      footer {
+        color: #858a9d;
+        font-size: 0.8rem;
+        padding: 30px 0;
+      }
+      @media (max-width: 575px) {
+        .hero {
+          padding-top: 25px;
+        }
+        .hero h1 {
+          font-size: 2rem;
+        }
+        .surface {
+          border-radius: 14px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="container py-2">
+        <a class="navbar-brand fw-bold d-flex align-items-center" href="#"
+          ><span class="brand-icon">T</span>TaskFlow</a
+        ><span class="badge rounded-pill text-bg-light border px-3 py-2"
+          >Sprint 1 · Task Manager</span
+        >
+      </div>
+    </nav>
+    <main class="container pb-4">
+      <section class="hero">
+        <div class="eyebrow mb-2">Plan · Track · Complete</div>
+        <div
+          class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3"
+        >
+          <div>
+            <h1 class="display-5 mb-2">Team task board</h1>
+            <p class="muted mb-0">
+              Create clear tasks, assign ownership, and keep work moving.
+            </p>
+          </div>
+          <button class="btn btn-brand px-4 py-2" id="focusForm">
+            ＋ Create a task
+          </button>
+        </div>
+      </section>
+      <section class="row g-3 mb-4" aria-label="Task statistics">
+        <div class="col-6 col-lg-3">
+          <div class="surface stat">
+            <div class="stat-label">Total tasks</div>
+            <div class="stat-number" id="totalCount">5</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="surface stat">
+            <div class="stat-label">To do</div>
+            <div class="stat-number" id="todoCount">1</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="surface stat">
+            <div class="stat-label">In progress</div>
+            <div class="stat-number" id="progressCount">2</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="surface stat">
+            <div class="stat-label">Completed</div>
+            <div class="stat-number" id="doneCount">1</div>
+          </div>
+        </div>
+      </section>
+      <div class="row g-4 align-items-start">
+        <div class="col-lg-4">
+          <section class="surface p-3 p-md-4" id="formPanel">
+            <h2 class="section-title mb-1" id="formHeading">Create a task</h2>
+            <p class="muted small mb-4">
+              All fields are required. Please enter valid task details.
+            </p>
+            <div
+              id="formAlert"
+              class="alert alert-danger d-none"
+              role="alert"
+              aria-live="polite"
+            ></div>
+            <form id="taskForm" novalidate>
+              <input type="hidden" id="taskId" />
+              <div class="mb-3">
+                <label class="form-label" for="taskName"
+                  >Task Name <span class="text-danger">*</span></label
+                ><input
+                  class="form-control"
+                  id="taskName"
+                  type="text"
+                  maxlength="80"
+                  placeholder="e.g. Build the navigation bar"
+                  required
+                />
+                <div class="invalid-feedback">
+                  Enter a task name (1–80 characters).
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="description"
+                  >Description <span class="text-danger">*</span></label
+                ><textarea
+                  class="form-control"
+                  id="description"
+                  rows="3"
+                  maxlength="300"
+                  placeholder="Describe what needs to be done"
+                  required
+                ></textarea>
+                <div class="invalid-feedback">
+                  Enter a description (1–300 characters).
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="assignedTo"
+                  >Assigned To <span class="text-danger">*</span></label
+                ><input
+                  class="form-control"
+                  id="assignedTo"
+                  type="text"
+                  maxlength="60"
+                  placeholder="Team member name"
+                  required
+                />
+                <div class="invalid-feedback">
+                  Enter the name of the person responsible.
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="dueDate"
+                  >Due Date <span class="text-danger">*</span></label
+                ><input
+                  class="form-control"
+                  id="dueDate"
+                  type="date"
+                  required
+                />
+                <div class="invalid-feedback">
+                  Choose today or a future due date.
+                </div>
+              </div>
+              <div class="mb-4">
+                <label class="form-label" for="status"
+                  >Status <span class="text-danger">*</span></label
+                ><select class="form-select" id="status" required>
+                  <option value="">Choose a status</option>
+                  <option value="TODO">TODO</option>
+                  <option value="IN PROGRESS">IN PROGRESS</option>
+                  <option value="REVIEW">REVIEW</option>
+                  <option value="DONE">DONE</option>
+                </select>
+                <div class="invalid-feedback">Select a task status.</div>
+              </div>
+              <div class="d-flex gap-2">
+                <button
+                  class="btn btn-brand flex-grow-1"
+                  type="submit"
+                  id="submitButton"
+                >
+                  Add task</button
+                ><button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  id="resetButton"
+                >
+                  Clear
+                </button>
+              </div>
+            </form>
+          </section>
+        </div>
+        <div class="col-lg-8">
+          <section>
+            <div
+              class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-3"
+            >
+              <div>
+                <h2 class="section-title mb-1">Task list</h2>
+                <p class="muted small mb-0">
+                  Every card shows the full task information.
+                </p>
+              </div>
+              <select
+                id="filterStatus"
+                class="form-select"
+                style="max-width: 190px"
+                aria-label="Filter tasks by status"
+              >
+                <option value="ALL">All statuses</option>
+                <option value="TODO">TODO</option>
+                <option value="IN PROGRESS">IN PROGRESS</option>
+                <option value="REVIEW">REVIEW</option>
+                <option value="DONE">DONE</option>
+              </select>
+            </div>
+            <div id="taskList" class="row g-3" aria-live="polite"></div>
+          </section>
+        </div>
+      </div>
+      <footer class="text-center">
+        TaskFlow · Built with Bootstrap 5, HTML and JavaScript.
+      </footer>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>
