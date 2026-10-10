@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FlexiBoard | Customizable Grid Workspace</title>
+<style>
+:root{--ink:#20233a;--muted:#70758d;--line:#e7e8f1;--paper:#fff;--bg:#f6f7fc;--accent:#6658d3}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:#fff;border-bottom:1px solid var(--line);padding:22px clamp(16px,4vw,56px);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}.logo{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#7c70ef,#a88cf5);display:grid;place-items:center;color:#fff;font-size:22px;font-weight:800}.brand h1{font-size:22px;margin:0}.brand p{margin:4px 0 0;color:var(--muted);font-size:13px}
+.header-tag{background:#f0edff;color:#5c4cc5;padding:8px 12px;border-radius:20px;font-size:12px;font-weight:700}
+main{max-width:1440px;margin:auto;padding:30px clamp(16px,4vw,56px) 50px}
+.intro{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;margin-bottom:24px}.intro h2{margin:0 0 8px;font-size:clamp(24px,3vw,34px);letter-spacing:-.7px}.intro p{margin:0;color:var(--muted);line-height:1.5}
+.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);padding:14px;border-radius:16px;margin-bottom:24px;box-shadow:0 5px 18px #27235a08}
+.toolbar label{font-size:13px;font-weight:700;color:#50556d}.count-control{display:flex;align-items:center;gap:8px}.count-control input{width:58px;text-align:center}
+input,button{font:inherit}input[type=number],input[type=text],input[type=color]{border:1px solid #dfe1ed;border-radius:9px;background:#fff;padding:9px 10px;color:var(--ink);outline:none}input:focus{border-color:var(--accent);box-shadow:0 0 0 3px #6658d31a}
+button{border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;transition:transform .15s,opacity .15s}button:hover{transform:translateY(-1px)}button:focus-visible{outline:3px solid #aaa1ff;outline-offset:2px}.primary{background:var(--accent);color:#fff}.secondary{background:#f0efff;color:#5145b5}.plain{background:#f4f5fa;color:#4e536a}.danger{background:#fff0f0;color:#b33b4b}.toolbar .hint{font-size:12px;color:var(--muted);margin-left:auto}
+.board{display:grid;grid-template-columns:repeat(3,minmax(230px,1fr));gap:16px;align-items:start}
+.column{min-width:0;border:1px solid #e5e6ef;border-radius:16px;overflow:hidden;box-shadow:0 7px 24px #27235a08;background:#fff;transition:transform .18s,outline .18s}
+.column.dragging{opacity:.48;transform:rotate(1deg)}.column.drag-over{outline:3px dashed var(--accent);outline-offset:3px}
+.column-head{padding:17px 16px 14px;background:var(--column-color,#e9e8ff);color:#292743}
+.column-title-row{display:flex;align-items:center;justify-content:space-between;gap:8px}.column h3{font-size:16px;margin:0;overflow-wrap:anywhere}.column-actions{display:flex;gap:5px}.icon-btn{padding:7px 9px;background:#ffffffb8;color:#373453;font-size:12px;border:1px solid #ffffff80}
+.column-sub{display:flex;justify-content:space-between;align-items:center;margin-top:13px;font-size:12px;color:#56546b}.position{display:flex;align-items:center;gap:5px}.position input{width:48px;padding:5px;text-align:center;background:#ffffffcc}
+.cards{padding:12px;min-height:150px;display:flex;flex-direction:column;gap:9px}.task-card{border:1px solid #e9eaf2;border-radius:11px;padding:12px;background:#fff;box-shadow:0 3px 9px #25234a07}.task-card p{margin:0 0 9px;font-size:13px;line-height:1.45;overflow-wrap:anywhere}.task-card button{padding:5px 8px;font-size:11px}.card-actions{display:flex;justify-content:space-between;gap:8px}.empty{padding:22px 12px;text-align:center;color:#85899c;font-size:12px;border:1px dashed #d9dbea;border-radius:10px}
+.add-task{margin:0 12px 13px;width:calc(100% - 24px);background:#f6f5ff;color:#5d51bb;border:1px dashed #d7d2ff}
+footer{text-align:center;color:#8a8da0;font-size:12px;padding:26px 12px}
+dialog{border:0;border-radius:18px;padding:0;width:min(440px,calc(100% - 28px));box-shadow:0 24px 90px #19163740}dialog::backdrop{background:#17152b70;backdrop-filter:blur(3px)}.modal-head{padding:20px 22px;border-bottom:1px solid var(--line)}.modal-head h3{margin:0;font-size:19px}.modal-body{padding:22px;display:grid;gap:15px}.field{display:grid;gap:7px}.field label{font-size:13px;font-weight:700}.field input[type=text]{width:100%}.color-row{display:flex;gap:12px;align-items:center}.color-row input[type=color]{width:52px;height:42px;padding:4px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;padding:0 22px 22px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#26243e;color:#fff;padding:11px 16px;border-radius:10px;font-size:13px;box-shadow:0 8px 30px #0002;z-index:5}
+@media(max-width:850px){.board{grid-template-columns:repeat(2,minmax(220px,1fr))}.toolbar .hint{width:100%;margin-left:0}}
+@media(max-width:560px){.board{grid-template-columns:1fr}.intro{align-items:start}.toolbar{align-items:flex-start}.toolbar .hint{line-height:1.5}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="logo">F</div><div><h1>FlexiBoard</h1><p>Your space. Your layout. Your workflow.</p></div></div>
+  <span class="header-tag">SPRINT 1 · EXTRA CHALLENGE</span>
+</header>
+<main>
+  <section class="intro"><div><h2>Build your own workspace</h2><p>Organize tasks in a flexible grid. Add columns, change their order, and make each one yours.</p></div></section>
+  <section class="toolbar" aria-label="Board controls">
+    <div class="count-control"><label for="columnCount">Number of columns</label><input id="columnCount" type="number" min="1" max="8" value="3"><button class="primary" id="applyCount">Apply</button></div>
+    <button class="secondary" id="addColumn">＋ Add column</button>
+    <button class="plain" id="removeColumn">− Remove last</button>
+    <span class="hint">Tip: drag a column to reorder it, or enter a position number.</span>
+  </section>
+  <section id="board" class="board" aria-label="Customizable task grid"></section>
+  <footer>FlexiBoard · A customizable multi-column workspace built with HTML, CSS and JavaScript.</footer>
+</main>
+
+<dialog id="editDialog">
+  <form id="editForm">
+    <div class="modal-head"><h3>Edit column</h3></div>
+    <div class="modal-body">
+      <div class="field"><label for="editTitle">Column title</label><input id="editTitle" type="text" maxlength="45" required placeholder="Enter a title"></div>
+      <div class="field"><label for="editColor">Background color</label><div class="color-row"><input id="editColor" type="color" value="#e9e8ff"><input id="editHex" type="text" value="#e9e8ff" maxlength="7" aria-label="Hex color value" pattern="^#[0-9a-fA-F]{6}$" required></div></div>
+    </div>
+    <div class="modal-actions"><button type="button" class="plain" id="cancelEdit">Cancel</button><button class="primary" type="submit">Save changes</button></div>
+  </form>
+</dialog>
+<script>
+const defaultColumns = [
+ {id:1,title:"To Do",color:"#e3eafe",tasks:["Review project requirements","Plan the next steps"]},
+ {id:2,title:"In Progress",color:"#d9f5e8",tasks:["Build the grid layout"]},
+ {id:3,title:"Completed",color:"#fce5d8",tasks:["Create project folder"]}
+];
+let columns = defaultColumns.map(c=>({...c,tasks:[...c.tasks]}));
+let nextId=4, editingId=null, draggedId=null;
+const board=document.getElementById("board"), countInput=document.getElementById("columnCount");
+const dialog=document.getElementById("editDialog"), editTitle=document.getElementById("editTitle"), editColor=document.getElementById("editColor"), editHex=document.getElementById("editHex");
+function safeColor(value){return /^#[0-9a-fA-F]{6}$/.test(value)?value:"#e9e8ff"}
+function render(){
+ countInput.value=columns.length;
+ board.style.gridTemplateColumns=`repeat(${Math.min(columns.length,4)}, minmax(0, 1fr))`;
+ board.innerHTML="";
+ columns.forEach((col,index)=>{
+  const section=document.createElement("article");section.className="column";section.draggable=true;section.dataset.id=col.id;
+  section.innerHTML=`<div class="column-head" style="--column-color:${safeColor(col.color)};background:${safeColor(col.color)}">
+   <div class="column-title-row"><h3></h3><div class="column-actions"><button class="icon-btn edit-btn" aria-label="Edit column">Edit</button></div></div>
+   <div class="column-sub"><span class="task-count"></span><label class="position">Position <input class="position-input" type="number" min="1" max="${columns.length}" value="${index+1}" aria-label="Column position"></label></div>
+  </div><div class="cards"></div><button class="add-task">＋ Add task</button>`;
+  section.querySelector("h3").textContent=col.title;
+  section.querySelector(".task-count").textContent=`${col.tasks.length} task${col.tasks.length===1?"":"s"}`;
+  const cards=section.querySelector(".cards");
+  if(!col.tasks.length){const empty=document.createElement("div");empty.className="empty";empty.textContent="No tasks yet. Add one below.";cards.appendChild(empty)}
+  col.tasks.forEach((task,taskIndex)=>{
+   const card=document.createElement("div");card.className="task-card";
+   const p=document.createElement("p");p.textContent=task;
+   const actions=document.createElement("div");actions.className="card-actions";
+   const done=document.createElement("button");done.className="secondary";done.textContent="✓ Done";done.addEventListener("click",()=>{col.tasks.splice(taskIndex,1);const completed=columns.find(c=>c.title.toLowerCase()==="completed");if(completed&&completed.id!==col.id)completed.tasks.push(task);else col.tasks.push(task);render();notify("Task updated")});
+   const del=document.createElement("button");del.className="danger";del.textContent="Delete";del.addEventListener("click",()=>{col.tasks.splice(taskIndex,1);render()});
+   actions.append(done,del);card.append(p,actions);cards.appendChild(card);
+  });
+  section.querySelector(".edit-btn").addEventListener("click",()=>openEdit(col.id));
+  section.querySelector(".add-task").addEventListener("click",()=>{const task=prompt("Enter a task for "+col.title+":");if(task&&task.trim()){col.tasks.push(task.trim());render()}});
+  section.querySelector(".position-input").addEventListener("change",e=>{const target=Number(e.target.value);if(!Number.isInteger(target)||target<1||target>columns.length){notify("Enter a position from 1 to "+columns.length);render();return}const from=columns.findIndex(c=>c.id===col.id);const moved=columns.splice(from,1)[0];columns.splice(target-1,0,moved);render();notify("Column order updated")});
+  section.addEventListener("dragstart",e=>{draggedId=col.id;section.classList.add("dragging");e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text/plain",String(col.id))});
+  section.addEventListener("dragend",()=>{draggedId=null;document.querySelectorAll(".column").forEach(el=>el.classList.remove("dragging","drag-over"))});
+  section.addEventListener("dragover",e=>{e.preventDefault();e.dataTransfer.dropEffect="move";section.classList.add("drag-over")});
+  section.addEventListener("dragleave",()=>section.classList.remove("drag-over"));
+  section.addEventListener("drop",e=>{e.preventDefault();section.classList.remove("drag-over");const source=Number(e.dataTransfer.getData("text/plain"))||draggedId;if(!source||source===col.id)return;const from=columns.findIndex(c=>c.id===source),to=columns.findIndex(c=>c.id===col.id);if(from<0||to<0)return;const moved=columns.splice(from,1)[0];columns.splice(to,0,moved);render();notify("Column reordered")});
+  board.appendChild(section);
+ });
+}
+function addColumn(){if(columns.length>=8){notify("Maximum 8 columns allowed");return}columns.push({id:nextId++,title:"New Column",color:"#eee8ff",tasks:[]});render();notify("Column added")}
+function removeColumn(){if(columns.length<=1){notify("Keep at least one column");return}columns.pop();render();notify("Last column removed")}
+document.getElementById("addColumn").addEventListener("click",addColumn);
+document.getElementById("removeColumn").addEventListener("click",removeColumn);
+document.getElementById("applyCount").addEventListener("click",()=>{const n=Number(countInput.value);if(!Number.isInteger(n)||n<1||n>8){notify("Choose between 1 and 8 columns");countInput.value=columns.length;return}while(columns.length<n)columns.push({id:nextId++,title:"New Column",color:"#eee8ff",tasks:[]});while(columns.length>n)columns.pop();render();notify("Column count updated")});
+function openEdit(id){const col=columns.find(c=>c.id===id);if(!col)return;editingId=id;editTitle.value=col.title;editColor.value=safeColor(col.color);editHex.value=safeColor(col.color);dialog.showModal()}
+editColor.addEventListener("input",()=>editHex.value=editColor.value);
+editHex.addEventListener("input",()=>{if(/^#[0-9a-fA-F]{6}$/.test(editHex.value))editColor.value=editHex.value});
+document.getElementById("cancelEdit").addEventListener("click",()=>dialog.close());
+document.getElementById("editForm").addEventListener("submit",e=>{e.preventDefault();const col=columns.find(c=>c.id===editingId);if(!col)return;const color=editHex.value.trim();if(!/^#[0-9a-fA-F]{6}$/.test(color)){notify("Enter a valid hex color such as #e3eafe");return}col.title=editTitle.value.trim()||"Untitled";col.color=color;dialog.close();render();notify("Column updated")});
+let toastTimer;function notify(message){let toast=document.querySelector(".toast");if(toast)toast.remove();toast=document.createElement("div");toast.className="toast";toast.setAttribute("role","status");toast.textContent=message;document.body.appendChild(toast);clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.remove(),2200)}
+render();
+</script>
+</body>
+</html>
